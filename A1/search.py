@@ -105,16 +105,16 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
+	"""
     print ( problem.getStartState() )
-    You will get (5,5)
+    #You will get (5,5)
 
     print (problem.isGoalState(problem.getStartState()) )
-    You will get True
+    #You will get True
 
     print ( problem.getSuccessors(problem.getStartState()) )
-    You will get [((x1,y1),'South',1),((x2,y2),'West',1)]
-    """
+    #You will get [((x1,y1),'South',1),((x2,y2),'West',1)]
+    #"""
     "*** YOUR CODE HERE ***"
 
 
@@ -123,6 +123,14 @@ def breadthFirstSearch(problem):
     Q1.2
     Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.Queue()
+    fringe.push(problem.getStartState())
+    while not fringe.isEmpty():
+    	node = fringe.pop()
+    	if(problem.isGoalState(node)):
+    		return node
+    	fringe.push(node)
+    return fringe	
 
 
 def nullHeuristic(state, problem=None):

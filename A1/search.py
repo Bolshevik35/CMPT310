@@ -84,7 +84,6 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
-
 def tinyMazeSearch(problem):
     """
     Returns a sequence of moves that solves tinyMaze.  For any other maze, the
@@ -106,17 +105,37 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
 	"""
-    print ( problem.getStartState() )
+    #print ( problem.getStartState() )
     #You will get (5,5)
 
-    print (problem.isGoalState(problem.getStartState()) )
+    #print (problem.isGoalState(problem.getStartState()) )
     #You will get True
 
-    print ( problem.getSuccessors(problem.getStartState()) )
+    #print ( problem.getSuccessors(problem.getStartState()))
     #You will get [((x1,y1),'South',1),((x2,y2),'West',1)]
-    #"""
+    
     "*** YOUR CODE HERE ***"
+    #from util import Stack
+    fringe = util.Stack()
+    currentPath = util.Stack() 
+    visited = []
+    path = []
+    if problem.isGoalState(problem.getStartState()):
+        return path
 
+    fringe.push(problem.getStartState())
+    node = fringe.pop()
+    while not problem.isGoalState(node):
+        if node not in visited:
+            visited.append(node)
+            child = problem.getSuccessors(node)
+            for each in child:
+                fringe.push(each[0])
+                new = path + [each[1]]
+                currentPath.push(new)
+        node = fringe.pop()
+        path = currentPath.pop()
+    return path
 
 def breadthFirstSearch(problem):
     """
@@ -124,13 +143,26 @@ def breadthFirstSearch(problem):
     Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     fringe = util.Queue()
+    currentPath = util.Queue() 
+    visited = []
+    path = []
+    if problem.isGoalState(problem.getStartState()):
+        return path
+
     fringe.push(problem.getStartState())
-    while not fringe.isEmpty():
-    	node = fringe.pop()
-    	if(problem.isGoalState(node)):
-    		return node
-    	fringe.push(node)
-    return fringe	
+    node = fringe.pop()
+    while not problem.isGoalState(node):
+        if node not in visited:
+            visited.append(node)
+            child = problem.getSuccessors(node)
+            for each in child:
+                fringe.push(each[0])
+                new = path + [each[1]]
+                currentPath.push(new)
+        node = fringe.pop()
+        path = currentPath.pop()
+    return path
+
 
 
 def nullHeuristic(state, problem=None):

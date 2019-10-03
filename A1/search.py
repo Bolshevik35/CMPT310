@@ -159,8 +159,9 @@ def breadthFirstSearch(problem):
                 fringe.push(each[0])
                 new = path + [each[1]]
                 currentPath.push(new)
-        node = fringe.pop()
-        path = currentPath.pop()
+        if not fringe.isEmpty():
+            node = fringe.pop()
+            path = currentPath.pop()
     return path
 
 
@@ -178,7 +179,29 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Search the node that has the lowest combined cost and heuristic first."""
     """Call heuristic(s,problem) to get h(s) value."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue()
+    currentPath = util.PriorityQueue()
+    visited = []
+    path = []
+    if problem.isGoalState(problem.getStartState()):
+        return path 
 
+    fringe.push(problem.getStartState(), 0)
+    node = fringe.pop()
+
+    while not problem.isGoalState(node):
+        if node not in visited:
+            visited.append(node)
+            child = problem.getSuccessors(node)
+            for each in child:
+                if each[0] not in visited:
+                    new = path + [each[1]]
+                    cost = problem.getCostOfActions(new) + heuristic(each[0], problem)
+                    fringe.push(each[0], cost)
+                    currentPath.push(new, cost)
+        node = fringe.pop()
+        path = currentPath.pop()
+    return path
 
 
 # Abbreviations

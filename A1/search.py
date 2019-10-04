@@ -115,9 +115,8 @@ def depthFirstSearch(problem):
     #You will get [((x1,y1),'South',1),((x2,y2),'West',1)]
     
     "*** YOUR CODE HERE ***"
-    #from util import Stack
     fringe = util.Stack()
-    currentPath = util.Stack() 
+    currentPath = [] 
     visited = []
     path = []
     if problem.isGoalState(problem.getStartState()):
@@ -132,7 +131,7 @@ def depthFirstSearch(problem):
             for each in child:
                 fringe.push(each[0])
                 new = path + [each[1]]
-                currentPath.push(new)
+                currentPath.append(new)
         node = fringe.pop()
         path = currentPath.pop()
     return path

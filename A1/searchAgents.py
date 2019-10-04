@@ -298,7 +298,7 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
         self._visitedlist = []
-        self.game = startingGameState
+        self.startingGame = startingGameState
 
     def getStartState(self):
         """
@@ -333,7 +333,7 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
-        print(state)
+        #print(state)
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -352,12 +352,12 @@ class CornersProblem(search.SearchProblem):
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
                 nextState = (nextx, nexty)
-                visitedCorners = list(state[1])
+                visited = list(state[1])
                 if nextState in self.corners:
-                    if nextState not in visitedCorners:
-                        visitedCorners.append(nextState)
+                    if nextState not in visited:
+                        visited.append(nextState)
                 cost = self.costFn(nextx, nexty)
-                new = ((nextState, visitedCorners), action, cost)
+                new = ((nextState, visited), action, cost)
                 successors.append(new)
 
         self._expanded += 1 # DO NOT CHANGE
@@ -398,7 +398,19 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
+    xy1 = state[0]
+    visited = state[1]
+    notVisited = []
+    ret = 0
 
+    for some in corners:
+        if some not in visited:
+            notVisited.append(some)
+    for i in notVisited:
+        temp = mazeDistance(xy1, i, problem.startingGame)
+        if temp > ret:
+            ret = temp
+    return ret
 
 def mazeDistance(point1, point2, gameState):
     """

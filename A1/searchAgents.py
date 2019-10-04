@@ -298,6 +298,7 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
         self._visitedlist = []
+        self.game = startingGameState
 
     def getStartState(self):
         """
@@ -318,10 +319,8 @@ class CornersProblem(search.SearchProblem):
         visited = state[1]
         if position in self.corners:
             if position in visited:
-                if len(self._visitedlist) == 4:
+                if len(visited) == 4:
                     return True
-            else:
-                self._visitedlist.append(position)
         return False
 
     def getSuccessors(self, state):
@@ -334,6 +333,7 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
+        print(state)
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
@@ -344,19 +344,25 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
-            a = state[0]
-            x,y = a
+            currentPosition = state[0]
+            x,y = currentPosition
             dx, dy = Actions.directionToVector(action)
             nextx = int(x + dx)
             nexty = int(y + dy)
-            if not self.walls[nextx][nexty]:
-                nextState = ((nextx, nexty), self._visitedlist)
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextState = (nextx, nexty)
+                visitedCorners = list(state[1])
+                if nextState in self.corners:
+                    if nextState not in visitedCorners:
+                        visitedCorners.append(nextState)
                 cost = self.costFn(nextx, nexty)
-                successors.append((nextState, action, cost))
+                new = ((nextState, visitedCorners), action, cost)
+                successors.append(new)
 
         self._expanded += 1 # DO NOT CHANGE
-        return successors
-
+        return successors     
+                  
     def getCostOfActions(self, actions):
         """
         Returns the cost of a particular sequence of actions.  If those actions

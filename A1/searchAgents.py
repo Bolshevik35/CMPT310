@@ -402,14 +402,18 @@ def cornersHeuristic(state, problem):
     visited = state[1]
     notVisited = []
     ret = 0
-
     for some in corners:
         if some not in visited:
             notVisited.append(some)
-    for i in notVisited:
-        temp = mazeDistance(xy1, i, problem.startingGame)
-        if temp > ret:
-            ret = temp
+
+    while len(notVisited) != 0:
+        notVisitedHeuristic = []
+        for point in notVisited:
+            notVisitedHeuristic.append((abs(xy1[0] - point[0]) + abs(xy1[1] - point[1]), point))
+        minValue = min(notVisitedHeuristic)
+        ret += minValue[0]
+        xy1 = minValue[1]
+        notVisited.remove(xy1)
     return ret
 
 def mazeDistance(point1, point2, gameState):

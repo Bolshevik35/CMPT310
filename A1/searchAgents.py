@@ -401,6 +401,7 @@ def cornersHeuristic(state, problem):
     xy1 = state[0]
     visited = state[1]
     notVisited = []
+    #notVisitedHeuristic = []
     ret = 0
     for some in corners:
         if some not in visited:
@@ -409,10 +410,10 @@ def cornersHeuristic(state, problem):
     while len(notVisited) != 0:
         notVisitedHeuristic = []
         for point in notVisited:
-            notVisitedHeuristic.append((abs(xy1[0] - point[0]) + abs(xy1[1] - point[1]), point))
-        minValue = min(notVisitedHeuristic)
-        ret += minValue[0]
-        xy1 = minValue[1]
+            notVisitedHeuristic.append((((xy1[0] - point[0]) ** 2 + (xy1[1] - point[1]) ** 2 ) ** 0.5, point))
+        minTuple = min(notVisitedHeuristic)
+        ret = ret + minTuple[0]
+        xy1 = minTuple[1]
         notVisited.remove(xy1)
     return ret
 

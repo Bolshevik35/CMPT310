@@ -115,17 +115,53 @@ def main(argv):
 #  You will need to define your own
 #  DPLLsat(), DPLL(), pure-elim(), propagate-units(), and
 #  any other auxiliary functions
+
+# def pure_symbol(clauses, symbol , val):
+# 	check = 0
+# 	if val = False: 
+# 		check = (-1) * val 
+
+def DPLL(clauses, variables, model = {}):
+	flag = False
+	if len(variables) != 0:
+		P = variables.pop()
+	else:
+		return model
+	# values = list(model.values())
+	# for x in values: 
+	# 	if x == False:
+	# 		flag = True
+	# 	else:
+	# 		continue
+	# if flag == False:
+	# 	return model
+	# else:
+	# 	return "failure"	
+	for value in [True, False]:
+		model[P] = value
+		ret = DPLL(clauses, variables, model)
+		if ret != "failure": 
+			return ret
+# def pure_symbol ():
+
+
 def solve_dpll(instance, verbosity):
-    # print(instance)
+    #print(instance)
     # instance.VARS goes 1 to N in a dict
-    # print(instance.VARS)
-    # print(verbosity)
+    #print(instance.VARS)
+    #print(verbosity)
     ###########################################
-    # Start your code
+    # Start your code 
     clauses = instance.clauses
     variables = instance.VARS
+    ptr = {}
+    ret = DPLL (clauses, variables, ptr)
 
-
+    if ret == "failure":
+    	print("UNSAT")
+    else: 
+    	print("SAT")
+    	print(ret)
 
 
 

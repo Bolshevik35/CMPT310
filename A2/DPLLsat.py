@@ -116,33 +116,42 @@ def main(argv):
 #  DPLLsat(), DPLL(), pure-elim(), propagate-units(), and
 #  any other auxiliary functions
 
-# def pure_symbol(clauses, symbol , val):
-# 	check = 0
-# 	if val = False: 
-# 		check = (-1) * val 
+def literalList(clauses):
+	literals = []
+	for clause in clauses: 
+		for literal in clause:
+			if literal not in literals:
+				literals.append(literal)
+	return literals
 
-def DPLL(clauses, variables, model = {}):
-	flag = False
-	if len(variables) != 0:
-		P = variables.pop()
-	else:
-		return model
-	# values = list(model.values())
-	# for x in values: 
-	# 	if x == False:
-	# 		flag = True
-	# 	else:
-	# 		continue
-	# if flag == False:
-	# 	return model
-	# else:
-	# 	return "failure"	
+def varList(literals):
+	varList = []
+	for x in literals:
+		if x < 0:
+			temp = -1 * x 
+			if temp not in varList: 
+				varList.append(temp)
+		else:
+			if x not in varList:
+				varList.append(x)
+	return varList
+
+def DPLL(clauses, variables, model):
+	copy = variables
+	if len(clauses) == 0:
+		return True, model 
+
+	for x in clauses:
+		if len(x) == 0:
+			return False, None
+
+	p = copy.pop()
+	value = True 
 	for value in [True, False]:
-		model[P] = value
+		model[p] = value
 		ret = DPLL(clauses, variables, model)
-		if ret != "failure": 
+		if ret: 
 			return ret
-# def pure_symbol ():
 
 
 def solve_dpll(instance, verbosity):
@@ -153,15 +162,22 @@ def solve_dpll(instance, verbosity):
     ###########################################
     # Start your code 
     clauses = instance.clauses
+    #print(clauses)
     variables = instance.VARS
     ptr = {}
-    ret = DPLL (clauses, variables, ptr)
+    
+    literals = literalList(clauses)
+    print(literals)
+    varLi = varList(literals)
+    varLi.sort()
+    print(varLi)
+    ret = DPLL (clauses, varLi, ptr)
 
-    if ret == "failure":
-    	print("UNSAT")
-    else: 
-    	print("SAT")
-    	print(ret)
+    # if ret == "failure":
+    # 	print("UNSAT")
+    # else: 
+    # 	print("SAT")
+    # 	print(ret)
 
 
 

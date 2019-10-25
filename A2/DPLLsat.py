@@ -138,6 +138,8 @@ def varList(literals):
 
 def elimination_clauses(clauses, variable):
     newClauses = []
+    if clauses == -1:
+        return -1
     for each in clauses:
         if variable in each: 
             continue
@@ -151,54 +153,63 @@ def elimination_clauses(clauses, variable):
             newClauses.append(temp)
         else:
             newClauses.append(each)
-    #print(newClauses)
     return newClauses
 
 def pureLiterals(clauses):
     literals = literalList(clauses)
     var = varList(literals)
-    pures = {}
+    pures = []
+    model = {}
     for x in var:
         if -x not in literals:
-            pures.update({x :True})
+            pures.append(x)
+            model.update({x: True})
         elif x not in literals:
-            pures.update({x : False})
-    for y,z in pures:
-        clauses = elimination_clauses(clauses, y)
-    return clauses, pures
+            pures.append(-x)
+            model.update({x: False})
+    for i in pures:
+        clauses = elimination_clauses(clauses, i)
+    return clauses, model
 
 def unitPropagation(clauses):
     model = {}
     unit_clauses = []
+    if clauses == -1:
+        return -1, model
     for clause in clauses:
         if len(clause) == 1:
             unit_clauses.append(clause)
-    for i in range(len(unit_clauses)):
-        each = unit_clauses[i][0]
-        clauses = elimination_clauses(clauses, each)
-        if each > 0:
-            model.update({each: True})
-        else:
-            model.update({-each: False})
-        if clauses == -1:
-            return -1, {}
-        if not clauses:
-            return clauses, model
+    if len(unit_clauses) > 0:
+        for unit in unit_clauses:
+            #unit = unit_clauses[i]
+            temp = unit[0]
+            #clauses.remove(unit)
+            clauses = elimination_clauses(clauses, temp)
+            if temp > 0:
+                model.update({temp: True})
+            else:
+                model.update({-temp: False})
+            if clauses == -1:
+                return -1, model
+            if not clauses:
+                return clauses, model
     return clauses, model
 
 def DPLL(clauses, variables, model):
-    #clauses, pure_model = pureLiterals(clauses)
     clauses, unit_model = unitPropagation(clauses)
-    #model.update(pure_model)
     model.update(unit_model)
+    # clauses, pure_model = pureLiterals(clauses)
+    # model.update(pure_model)
     if not clauses:
         return True 
     if clauses == -1:
         return False
+
     varList = copy.deepcopy(variables)
-    value = True 
     p = varList.pop()
+
     model.update({p:True})
+    #print(clauses)
     ret = DPLL(elimination_clauses(clauses, p), varList, model)
     if not ret:
         model.update({p:False})

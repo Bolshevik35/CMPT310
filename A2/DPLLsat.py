@@ -158,23 +158,10 @@ def elimination_clauses(clauses, variable):
     return newClauses
 
 def pureLiterals(clauses):
-    literals = literalList(clauses)
-    var = varList(literals)
-    pures = []
-    model = {}
-    for x in var:
-        if -x not in literals:
-            pures.append(x)
-            model.update({x: True})
-        elif x not in literals:
-            pures.append(-x)
-            model.update({x: False})
-    for i in pures:
-        clauses = elimination_clauses(clauses, i)
-    return clauses, model
+    
+
 
 def unitPropagation(clauses):
-    model = {}
     unit_clauses = []
     ret = []
     for clause in clauses:

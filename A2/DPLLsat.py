@@ -140,16 +140,14 @@ def elimination_clauses(clauses, variable):
     newClauses = []
     if clauses == -1:
         return -1
+
     for each in clauses:
         if variable in each: 
             continue
-        elif (-1)*variable in each:
-            # temp = []
-            # for x in each:
-            #     if x != (-1)*variable:
-            #         temp.append(x)
-            temp = copy.deepcopy(each)
-            temp.remove(-variable)
+        elif -variable in each:
+            temp = [x for x in each if x != -variable]
+            #temp = each
+            #temp.remove(-variable)
             if len(temp) == 0:
                 return -1
             newClauses.append(temp)
@@ -158,45 +156,52 @@ def elimination_clauses(clauses, variable):
     return newClauses
 
 def pureLiterals(clauses):
-    
-
+    literals = literalList(clauses)
+    for each in literals:
+        if -each not in literals:
+            return each
+    return -1
 
 def unitPropagation(clauses):
-    unit_clauses = []
-    ret = []
     for clause in clauses:
         if len(clause) == 1:
-            unit_clauses.append(clause)
-    for each in unit_clauses:
-        temp = each[0]
-        if temp > 0:
-            x = [temp, True]
-            ret.append(x)
-        else:
-            x = [temp, False]
-            ret.append(x)
-    if not ret:
-        return []
-    else:
-        return ret
+            temp = clause[0]
+            return temp
+    return -1
 
 def DPLL(clauses, variable, model):
     if not clauses:
         return True 
     if clauses == -1:
         return False
-    varLi = copy.deepcopy(variable)
+
+    varLi = copy.copy(variable)
+
+    pureLit = pureLiterals(clauses)
+    if pureLit != -1:
+        if pureLit > 0:
+            temp = varLi.remove(pureLit)
+            #var = [x for x in variable if x != pureLit]
+            model.update({pureLit : True})
+            return DPLL(elimination_clauses(clauses, pureLit), varLi, model)
+        else:
+            temp = varLi.remove(-pureLit)
+            #var = [x for x in variable if x != pureLit]
+            model.update({pureLit : False})
+            return DPLL(elimination_clauses(clauses, pureLit), varLi, model)
+
     unitClauses = unitPropagation(clauses)
-    if len(unitClauses):
-        for each in unitClauses:
-            if each[0] > 0:
-                temp = varLi.remove(each[0])
-                model.update({each[0] : True})
-                return DPLL(elimination_clauses(clauses, each[0]), varLi, model)
-            else:
-                temp = varLi.remove(-each[0])
-                model.update({-each[0]: False})
-                return DPLL(elimination_clauses(clauses, each[0]), varLi, model)
+    if unitClauses != -1:
+        if unitClauses > 0:
+            temp = varLi.remove(unitClauses)
+            #var = [x for x in variable if x != unitClauses]
+            model.update({unitClauses : True})
+            return DPLL(elimination_clauses(clauses, unitClauses), varLi, model)
+        else:
+            temp = varLi.remove(-unitClauses)
+            #var = [x for x in variable if x != unitClauses]
+            model.update({unitClauses : False})
+            return DPLL(elimination_clauses(clauses, unitClauses), varLi, model)
 
     p = varLi.pop()
     model.update({p:True})
@@ -217,12 +222,6 @@ def solve_dpll(instance, verbosity):
     #print(clauses)
     variables = instance.VARS
     ptr = {}
-    
-    #literals = literalList(clauses)
-    #print(literals)
-    #varLi = varList(literals)
-    #varLi.sort()
-    #print(varLi)
     ret = DPLL (clauses, variables, ptr)
     valueList = []
     for x, y in ptr.items():

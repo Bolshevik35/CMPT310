@@ -5,7 +5,7 @@
 # Please enter the number of hours you spent on this
 # assignment here
 """
-num_hours_i_spent_on_this_assignment = 
+num_hours_i_spent_on_this_assignment = 25
 """
 #
 #####################################################
@@ -117,12 +117,20 @@ def main(argv):
 #  any other auxiliary functions
 
 def literalList(clauses):
-	literals = []
-	for clause in clauses: 
-		for literal in clause:
-			if literal not in literals:
-				literals.append(literal)
-	return literals
+    literals = {}
+    for clause in clauses:
+        for lit in clause:
+            if lit in literals:
+                literals[lit] += 1
+            else:
+                literals[lit] = 1
+	# for clause in clauses: 
+	# 	for literal in clause:
+ #            if literal in literals:
+ #                literals[literal] += 1
+ #            else:
+ #                literals[literal] =1
+    return literals
 
 def varList(literals):
 	varList = []
@@ -157,9 +165,9 @@ def elimination_clauses(clauses, variable):
 
 def pureLiterals(clauses):
     literals = literalList(clauses)
-    for each in literals:
-        if -each not in literals:
-            return each
+    for lit, times in literals.items():
+        if -lit not in literals:
+            return lit
     return -1
 
 def unitPropagation(clauses):

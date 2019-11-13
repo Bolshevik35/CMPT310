@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import os
 import random
 import math
 
@@ -122,7 +123,7 @@ class HMM():
     # Output the most likely state for each symbol in an emmision sequence
     # - sequence: posterior probabilities received from posterior()
     # return: list of state indices, e.g. [0,0,0,1,1,0,0,...]
-    def posterior_decode(self, posterior):
+    def posterior_decode(self, sequence):
         nSamples  = len(sequence)
         post = self.posterior(sequence)
         best_path = np.zeros(nSamples)
@@ -160,11 +161,22 @@ def write_output(filename, viterbi, posterior):
         f.write("\n")
 
 
+def truncate_files(filename):
+    vit_file_name = file[:-4]+'_viterbi_output.txt'
+    pos_file_name = file[:-4]+'_posteri_output.txt' 
+    if os.path.isfile(vit_file_name):
+        open(vit_file_name, 'w')
+    if os.path.isfile(pos_file_name):
+        open(pos_file_name, 'w')
+
+
 if __name__ == '__main__':
 
     hmm = HMM()
 
     file = sys.argv[1]
+    truncate_files(file)
+    
     sequences  = read_sequences(file)
     for sequence in sequences:
         viterbi   = hmm.viterbi(sequence)

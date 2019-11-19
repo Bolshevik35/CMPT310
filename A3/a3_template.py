@@ -12,7 +12,7 @@ import operator
 #####################################################
 # Please enter the number of hours you spent on this
 # assignment here
-num_hours_i_spent_on_this_assignment = 0
+num_hours_i_spent_on_this_assignment = 25
 #####################################################
 #####################################################
 
@@ -61,7 +61,7 @@ class HMM():
         self.num_states = 2
         self.prior      = np.array([0.5, 0.5])
         self.transition = np.array([[0.999, 0.001], [0.01, 0.99]])
-        self.emission   = np.array([{"A": 0.291, "T": 0.291, "C": 0.209, "G": 0.209},
+        self.X   = np.array([{"A": 0.291, "T": 0.291, "C": 0.209, "G": 0.209},
                                     {"A": 0.169, "T": 0.169, "C": 0.331, "G": 0.331}])
 
     # Generates a sequence of states and characters from
@@ -93,7 +93,34 @@ class HMM():
     def viterbi(self, sequence):
         ###########################################
         # Start your code
-        print("My code here")
+        #print("My code here")
+        m = [[0 for y in range(self.num_states)] for x in range(len(sequence))]
+        prev = [[0 for y in range(self.num_states)] for x in range(len(sequence))]
+
+        for t in range(len(sequence)):
+            for i in range(self.num_states):
+                prob = list()
+
+                if t == 0:
+                    total_prob = math.log(self.prior[i]) #+ math.log(self.X[i][sequence[t]])
+                    prob.append(total_prob)
+                else:
+                    for j in range(self.num_states):
+                        prev_prob = m[t-1][j]
+                        total_prob = prev_prob + math.log(self.transition[j][i]) + math.log(self.X[i][sequence[t]])
+                        prob.append(total_prob)
+
+                m[t][i] = max(prob)
+                prev[t][i] = np.argmax(prob)
+
+        path = list()
+        for i in range(len(sequence)):
+            path.append(0)
+
+        path[len(sequence) - 1] = np.argmax(m[len(sequence) - 1])
+        for t in reversed(range(0, len(sequence)-1)):
+            path[t] = prev[t+1][path[t+1]]
+        return path
         # End your code
         ###########################################
 
@@ -115,7 +142,50 @@ class HMM():
     def posterior(self, sequence):
         ###########################################
         # Start your code
-        print("My code here")
+        #print("My code here")
+        forward = [[0 for y in range(self.num_states)] for x in range(len(sequence))]
+        backward = [[1 for y in range(self.num_states)] for x in range(len(sequence))]
+
+        #forward matrix
+        #forward[0,:] = math.log(self.prior[0])
+        for t in range(len(sequence)):
+            for i in range(self.num_states):
+                prob = list()
+                if t == 0:
+                    total_prob = math.log(self.prior[i]) + math.log(self.X[i][sequence[t]])
+                    prob.append(total_prob)
+                else:
+                    for j in range(self.num_states):
+                        prev_prob = forward[t-1][j]
+                        total_prob = prev_prob + math.log(self.transition[j][i]) + math.log(self.X[i][sequence[t]]) 
+                        prob.append(total_prob)
+            #forward[t][i] = max(prob)
+                forward[t][i] = self.log_sum(prob)
+
+        #backward matrix
+        for t in reversed(range(0,len(sequence))):
+            for i in range(self.num_states):
+                prob = list()
+                if t == len(sequence)-1 :
+                    new_prob = math.log(backward[t][i]) #+ math.log(self.X[i][sequence[t]])
+                    prob.append(new_prob)
+                else:
+                    for j in range(self.num_states):
+                        prev_prob = backward[t+1][j]
+                        total_prob = prev_prob + math.log(self.transition[i][j]) + math.log(self.X[j][sequence[t+1]])
+                        prob.append(total_prob)
+                #backward[t][i] = max(prob)
+                backward[t][i] = self.log_sum(prob)
+
+        print(backward)
+        #Compute Probability matrix 
+        posterior = [[0 for y in range(self.num_states)] for x in range(len(sequence))]
+        alpha = 1 / self.log_sum(forward[:][-1])
+        for t in range(len(sequence)):
+            for i in range(self.num_states):
+                posterior[t][i] = alpha * forward[t][i] * backward[t][i]
+        return posterior
+
         # End your code
         ###########################################
 

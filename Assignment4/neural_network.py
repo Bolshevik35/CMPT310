@@ -21,13 +21,14 @@ class NeuralNet:
         """
 
         # YOUR CODE STARTS HERE (1)
-
-        output = None #TODO output of the last layer
-        loss = None #TODO Compute the loss
+        #print(x)
+        output = self._layers[0].compute_activation(x)
+        for layer in range(1,len(self._layers),1):
+            #self._layers[layer].compute_activation(layer)
+            output = self._layers[layer].compute_activation(output) #TODO output of the last layer
+        loss = self.loss.compute_activation(output, target) #TODO Compute the loss
 
         # YOUR CODE ENDS HERE (1)
-
-
         return output, loss
 
     def compute_gradients(self):
@@ -43,7 +44,13 @@ class NeuralNet:
         
 
         # YOUR CODE STARTS HERE (2)
-       
+        #print((self._layers[0]).get_input_error_gradient())
+        self.loss.compute_gradient()
+        val = self.loss.get_input_error_gradient()
+        for layer in reversed(range(len(self._layers))):
+            self._layers[layer].set_output_error_gradient(val)
+            self._layers[layer].compute_gradient()
+            val = self._layers[layer].get_input_error_gradient()
         
         # YOUR CODE ENDS HERE (2)
 
@@ -59,8 +66,9 @@ class NeuralNet:
         """
         
         # YOUR CODE STARTS HERE (3)
-        
-
+        for layer in range(len(self._layers)):
+            self._layers[layer].update_weights(learning_rate)
+        self.loss.update_weights(learning_rate)
         # YOUR CODE ENDS HERE (3)
 
 

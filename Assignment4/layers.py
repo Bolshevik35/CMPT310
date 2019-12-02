@@ -71,9 +71,7 @@ class DenseLayer(BaseLayer):
         self._input_data = x
 
         # YOUR CODE STARTS HERE (1)
-        
-        output =  TODO
-        
+        output =  np.dot(self._input_data,self.w) + self.b
         # YOUR CODE ENDS HERE (1)
         
         return output
@@ -101,12 +99,16 @@ class DenseLayer(BaseLayer):
         """
         
         # YOUR CODE STARTS HERE (2)
-
-        self.dw = TODO
-
-        self.db = TODO
-
-        self._input_error_gradient = TODO
+        size = len(self._output_error_gradient[0])
+        self._output_error_gradient = np.sum(self._output_error_gradient, 0, keepdims = True)
+        print(self._input_data)
+        self._input_data = np.sum(self._input_data, 0, keepdims = True)
+        #print(self._output_error_gradient.shape)        
+        print(self._input_data) 
+        #print(self.w.shape)
+        self.dw = np.transpose(np.dot(self._output_error_gradient, self._input_data))
+        self.db = np.dot(self._output_error_gradient, np.ones((size,1)))
+        self._input_error_gradient = np.transpose(np.dot(self.w, self._output_error_gradient))
 
         # YOUR CODE ENDS HERE (2)
 
@@ -118,8 +120,8 @@ class DenseLayer(BaseLayer):
         """
 
         # YOUR CODE STARTS HERE (3)
-        self.w = TODO
-        self.b = TODO
+        self.w = self.w - self.dw * learning_rate
+        self.b = self.b - self.db * learning_rate
         # YOUR CODE ENDS HERE (3)
 
         self.weights = {"w": self.w, "b": self.b}

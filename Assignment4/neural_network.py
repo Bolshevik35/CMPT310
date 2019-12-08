@@ -21,7 +21,7 @@ class NeuralNet:
         """
 
         # YOUR CODE STARTS HERE (1)
-        #print(x)
+        
         output = self._layers[0].compute_activation(x)
         for layer in range(1,len(self._layers),1):
             #self._layers[layer].compute_activation(layer)

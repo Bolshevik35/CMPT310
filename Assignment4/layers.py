@@ -100,15 +100,14 @@ class DenseLayer(BaseLayer):
         
         # YOUR CODE STARTS HERE (2)
         size = len(self._output_error_gradient[0])
-        self._output_error_gradient = np.sum(self._output_error_gradient, 0, keepdims = True)
-        print(self._input_data)
-        self._input_data = np.sum(self._input_data, 0, keepdims = True)
-        #print(self._output_error_gradient.shape)        
-        print(self._input_data) 
-        #print(self.w.shape)
-        self.dw = np.transpose(np.dot(self._output_error_gradient, self._input_data))
-        self.db = np.dot(self._output_error_gradient, np.ones((size,1)))
-        self._input_error_gradient = np.transpose(np.dot(self.w, self._output_error_gradient))
+        #self._output_error_gradient = np.sum(self._output_error_gradient, 0, keepdims = True)
+        #self._input_data = np.sum(self._input_data, 0, keepdims = True)
+
+        self.dw = np.dot(np.transpose(self._input_data), self._output_error_gradient)
+        self.db = np.dot(np.sum(np.squeeze(self._output_error_gradient),0, keepdims = True), np.ones((size,1)))
+        #self.db = np.sum(self.db, 0, keepdims = True)
+        #print(self.db.shape)
+        self._input_error_gradient = np.dot(self._output_error_gradient, np.transpose(self.w))
 
         # YOUR CODE ENDS HERE (2)
 
